@@ -1,4 +1,5 @@
-MODULES := src/app 
+# Get list of folders
+MODULES := $(shell find . -type d)
 
 # look for include files in each of the modules
 CFLAGS += $(patsubst %,-I%,	$(MODULES))
@@ -12,8 +13,10 @@ OBJ :=
 #	$(patsubst %.cpp,%.o, $(filter %.cpp,$(SRC))) \
 #	$(patsubst %.c,%.o,	$(filter %.c,$(SRC)))
 
-# include the description for each module
-include $(patsubst %,%/module.mk,$(MODULES))
+# include the description for each module if any
+-include $(patsubst %,%/module.mk,$(MODULES))
+
+.SILENT:
 
 all: $(TARGET)
 
@@ -25,8 +28,8 @@ $(TARGET):  $$($$@_OBJS)
 	$(CXX) -o $@ $^ $($@_LIBS)
 
 
-# include the C include dependencies
-include $(OBJ:.o=.d)
+# include the C include dependencies if any and trigger dependencies refresh if files is missing
+-include $(OBJ:.o=.d)
 
 #calculate C/CPP include dependencies
 %.d: %.cpp
@@ -36,11 +39,11 @@ include $(OBJ:.o=.d)
 
 
 clean:
-	@rm $(TARGET)
-	@rm -fv `find . -name "*.o"`
-	@rm -fv `find . -name "*.a"`
-	@rm -fv `find . -name "*.map"`
-	@rm -fv `find . -name "*.so*"`
-	@rm -fv `find . -name "*.d"`
+	@rm -f $(TARGET)
+	@rm -f `find . -name "*.o"`
+	@rm -f `find . -name "*.a"`
+	@rm -f `find . -name "*.map"`
+	@rm -f `find . -name "*.so*"`
+	@rm -f `find . -name "*.d"`
 	
 
