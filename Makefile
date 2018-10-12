@@ -18,7 +18,7 @@ OBJ :=
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
 
-.SILENT:
+#.SILENT:
 
 BIN := bin
 TARGET_APPLICATIONS := $(APPLICATIONS:%=$(BIN)/%)
@@ -26,8 +26,8 @@ TARGET_APPLICATIONS := $(APPLICATIONS:%=$(BIN)/%)
 LIB := lib
 TARGET_LIBRARIES := $(LIBRARIES:%=$(LIB)/%)
 
-$(info APPLICATIONS is $(APPLICATIONS))
-$(info LIBRARIES is $(LIBRARIES))
+$(info APPLICATIONS is $(TARGET_APPLICATIONS))
+$(info LIBRARIES is $(TARGET_LIBRARIES))
 
 .PHONY: all clean
 
@@ -39,13 +39,13 @@ all: $(TARGET_APPLICATIONS) $(TARGET_LIBRARIES)
 $(TARGET_APPLICATIONS):  $$($$(@F)_OBJS)
 	echo Build application $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
 	mkdir -p $(BIN)
-	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L$(LIB)/
 
 .SECONDEXPANSION:
 $(TARGET_LIBRARIES):  $$($$(@F)_OBJS)
 	echo Build library $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
 	mkdir -p $(LIB)
-	$(CXX) -shared $(LDFLAGS) -o $@.so $^ $($(@F)_LIBS) -L $(BIN)
+	$(CXX) -shared $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L$(LIB)
 
 # include the C include dependencies if any and trigger dependencies refresh if files is missing
 -include $(OBJ:.o=.d)

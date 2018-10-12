@@ -1,12 +1,14 @@
 LOCAL_SRC := src/lib/lib.cpp
 
 # Name of the target to build
-LIBRARIES += lib
+LIBRARIES += libTest.so
 
 # List of objects used to build target 
-lib_OBJS := $(patsubst %.cpp,%.o, $(LOCAL_SRC))
+libTest.so_OBJS := $(patsubst %.cpp,%.o, $(LOCAL_SRC))
 
 # List of libs to be linked in the target
-lib_LIBS := 
+libTest.so_LIBS := 
 
-OBJ += $(lib_OBJS)
+OBJ += $(libTest.so_OBJS)
+
+
