@@ -29,7 +29,7 @@ all: $(TARGETBIN)
 # $$($$@_OBJ) -> target_OBJS
 .SECONDEXPANSION:
 $(TARGETBIN):  $$($$(@F)_OBJS)
-	@echo Build $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
+	echo Build $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
 	mkdir -p $(BIN)
 	$(CXX) -o $@ $^ $($(@F)_LIBS)
 
@@ -38,17 +38,17 @@ $(TARGETBIN):  $$($$(@F)_OBJS)
 
 #calculate C/CPP include dependencies
 %.d: %.cpp
-	@echo Rebuild dependency for $<
-	@DIR=$$(dirname $*); \
+	echo Rebuild dependency for $<
+	DIR=$$(dirname $*); \
 	$(CXX) -MM -MG $(CFLAGS) $< | sed -e "s@^\(.*\).o:@$$DIR/\1.d $$DIR/\1.o:@" > $@
 
 
 clean:
-	@rm -f $(TARGET)
-	@rm -f `find . -name "*.o"`
-	@rm -f `find . -name "*.a"`
-	@rm -f `find . -name "*.map"`
-	@rm -f `find . -name "*.so*"`
-	@rm -f `find . -name "*.d"`
+	rm -f $(TARGET)
+	rm -f `find . -name "*.o"`
+	rm -f `find . -name "*.a"`
+	rm -f `find . -name "*.map"`
+	rm -f `find . -name "*.so*"`
+	rm -f `find . -name "*.d"`
 	
 
