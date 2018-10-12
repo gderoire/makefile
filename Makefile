@@ -18,15 +18,20 @@ OBJ :=
 
 .SILENT:
 
-all: $(TARGET)
+BIN := bin
+TARGETBIN := $(TARGET:%=$(BIN)/%)
+
+.PHONY: all clean
+
+all: $(TARGETBIN)
 
 # link the program
 # $$($$@_OBJ) -> target_OBJS
 .SECONDEXPANSION:
-$(TARGET):  $$($$@_OBJS)
-	@echo Build $@ with $^ objects and $($@_LIBS) libraries
-	$(CXX) -o $@ $^ $($@_LIBS)
-
+$(TARGETBIN):  $$($$(@F)_OBJS)
+	@echo Build $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
+	mkdir -p $(BIN)
+	$(CXX) -o $@ $^ $($(@F)_LIBS)
 
 # include the C include dependencies if any and trigger dependencies refresh if files is missing
 -include $(OBJ:.o=.d)
