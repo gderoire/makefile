@@ -4,19 +4,16 @@ MODULES := src/app
 CFLAGS += $(patsubst %,-I%,	$(MODULES))
 
 # each module will add to this
-#SRC :=
-
-# each module will add to this
 TARGET :=
-
-# include the description for each module
-include $(patsubst %,%/module.mk,$(MODULES))
 
 # determine the object files for dependencies
 OBJ :=
 #	\
 #	$(patsubst %.cpp,%.o, $(filter %.cpp,$(SRC))) \
 #	$(patsubst %.c,%.o,	$(filter %.c,$(SRC)))
+
+# include the description for each module
+include $(patsubst %,%/module.mk,$(MODULES))
 
 all: $(TARGET)
 
@@ -39,6 +36,7 @@ include $(OBJ:.o=.d)
 
 
 clean:
+	@rm $(TARGET)
 	@rm -fv `find . -name "*.o"`
 	@rm -fv `find . -name "*.a"`
 	@rm -fv `find . -name "*.map"`

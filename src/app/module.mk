@@ -10,4 +10,4 @@ prog_OBJS := $(patsubst %.cpp,%.o, $(LOCAL_SRC))
 prog_LIBS := 
 #lib1 lib2
 
-OBJ += prog_OBJS
+OBJ += $(prog_OBJS)
