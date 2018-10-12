@@ -1,7 +1,7 @@
 LOCAL_SRC := src/app2/app.cpp
 
 # Name of the target to build
-TARGET += prog2
+APPLICATIONS +=prog2
 
 # List of objects used to build target 
 prog2_OBJS := $(patsubst %.cpp,%.o, $(LOCAL_SRC))

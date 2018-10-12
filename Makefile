@@ -10,10 +10,12 @@ MODULES := $(shell find $(SOURCES)src -type d)
 #$(warning Modules list $(MODULES))
 
 # look for include files in each of the modules
-CFLAGS += $(patsubst %,-I%,	$(MODULES))
+CFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
+CXXFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
 
 # each module will add to this
-TARGET :=
+APPLICATIONS :=
+LIBRARIES :=
 
 # each module will add to this (path is relative to $(SOURCES) )
 OBJ :=
@@ -29,16 +31,26 @@ MKDIR := mkdir -p
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
 
-.SILENT:
+#.SILENT:
 
-all: $(TARGET)
+$(info APPLICATIONS is $(APPLICATIONS))
+$(info LIBRARIES is $(LIBRARIES))
+
+.PHONY: all clean
+
+all: $(APPLICATIONS) $(LIBRARIES)
 
 # link the program
 # $$($$@_OBJ) -> target_OBJS
 .SECONDEXPANSION:
-$(TARGET):  $$($$@_OBJS)
-	echo Build $@ with $^ objects and $($@_LIBS) libraries
-	$(CXX) -o $@ $^ $($@_LIBS)
+$(APPLICATIONS):  $$($$(@F)_OBJS)
+	echo Build application $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
+	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L .
+
+.SECONDEXPANSION:
+$(LIBRARIES):  $$($$(@F)_OBJS)
+	echo Build library $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
+	$(CXX) -shared $(LDFLAGS) -o $@.so $^ $($(@F)_LIBS)
 
 # Don't rebuild dependencies if clean is requested
 ifneq ($(MAKECMDGOALS),clean)
