@@ -2,10 +2,12 @@
 MODULES := $(shell find . -type d)
 
 # look for include files in each of the modules
-CFLAGS += $(patsubst %,-I%,	$(MODULES))
+CFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
+CXXFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
 
 # each module will add to this
-TARGET :=
+APPLICATIONS :=
+LIBRARIES := 
 
 # determine the object files for dependencies
 OBJ :=
@@ -19,19 +21,31 @@ OBJ :=
 .SILENT:
 
 BIN := bin
-TARGETBIN := $(TARGET:%=$(BIN)/%)
+TARGET_APPLICATIONS := $(APPLICATIONS:%=$(BIN)/%)
+
+LIB := lib
+TARGET_LIBRARIES := $(LIBRARIES:%=$(LIB)/%)
+
+$(info APPLICATIONS is $(APPLICATIONS))
+$(info LIBRARIES is $(LIBRARIES))
 
 .PHONY: all clean
 
-all: $(TARGETBIN)
+all: $(TARGET_APPLICATIONS) $(TARGET_LIBRARIES)
 
 # link the program
 # $$($$@_OBJ) -> target_OBJS
 .SECONDEXPANSION:
-$(TARGETBIN):  $$($$(@F)_OBJS)
-	echo Build $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
+$(TARGET_APPLICATIONS):  $$($$(@F)_OBJS)
+	echo Build application $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
 	mkdir -p $(BIN)
-	$(CXX) -o $@ $^ $($(@F)_LIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS)
+
+.SECONDEXPANSION:
+$(TARGET_LIBRARIES):  $$($$(@F)_OBJS)
+	echo Build library $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
+	mkdir -p $(LIB)
+	$(CXX) -shared $(LDFLAGS) -o $@.so $^ $($(@F)_LIBS) -L $(BIN)
 
 # include the C include dependencies if any and trigger dependencies refresh if files is missing
 -include $(OBJ:.o=.d)
@@ -44,7 +58,8 @@ $(TARGETBIN):  $$($$(@F)_OBJS)
 
 
 clean:
-	rm -f $(TARGET)
+	rm -rf $(BIN)
+	rm -rf $(LIB)
 	rm -f `find . -name "*.o"`
 	rm -f `find . -name "*.a"`
 	rm -f `find . -name "*.map"`
