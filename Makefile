@@ -1,5 +1,9 @@
+SOURCES := ../
+
+VPATH := $(SOURCES)
+
 # Get list of folders
-MODULES := $(shell find . -type d)
+MODULES := $(shell find $(SOURCES) -type d)
 
 # look for include files in each of the modules
 CFLAGS += $(patsubst %,-I%,	$(MODULES))
@@ -35,6 +39,7 @@ $(TARGET):  $$($$@_OBJS)
 %.d: %.cpp
 	@echo Rebuild dependency for $<
 	@DIR=$$(dirname $*); \
+	mkdir -p $${DIR}; \
 	$(CXX) -MM -MG $(CFLAGS) $< | sed -e "s@^\(.*\).o:@$$DIR/\1.d $$DIR/\1.o:@" > $@
 
 
