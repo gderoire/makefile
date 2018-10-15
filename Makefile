@@ -26,7 +26,6 @@ RM := rm -f
 MKDIR := mkdir -p
 
 
-
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
 
