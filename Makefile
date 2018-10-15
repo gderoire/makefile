@@ -6,7 +6,8 @@ SOURCES := $(mkfile_dir)
 VPATH := $(SOURCES)
 
 # Get list of folders
-MODULES := $(shell find $(SOURCES) -type d)
+MODULES := $(shell find $(SOURCES)src -type d)
+#$(warning Modules list $(MODULES))
 
 # look for include files in each of the modules
 CFLAGS += $(patsubst %,-I%,	$(MODULES))
