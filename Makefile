@@ -40,16 +40,19 @@ $(TARGET):  $$($$@_OBJS)
 	echo Build $@ with $^ objects and $($@_LIBS) libraries
 	$(CXX) -o $@ $^ $($@_LIBS)
 
+# Don't rebuild dependencies if clean is requested
+ifneq ($(MAKECMDGOALS),clean)
 
-# include the C include dependencies if any and trigger dependencies refresh if files is missing
--include $(OBJ:.o=.d)
-
-#calculate C/CPP include dependencies
+# build C/CPP include dependencies
 %.d: %.cpp
 	echo Rebuild dependency for $<
 	DIR=$$(dirname $*); \
 	$(MKDIR) $${DIR}; \
 	$(CXX) -MM -MG $(CFLAGS) $< | sed -e "s@^\(.*\).o:@$$DIR/\1.d $$DIR/\1.o:@" > $@
+
+# include the C include dependencies if any and trigger dependencies refresh if files is missing
+-include $(OBJ:.o=.d)
+endif
 
 
 clean:
