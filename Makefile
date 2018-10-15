@@ -1,4 +1,7 @@
-SOURCES := ../
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+mkfile_dir := $(dir $(mkfile_path))
+
+SOURCES := $(mkfile_dir)
 
 VPATH := $(SOURCES)
 
