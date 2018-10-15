@@ -14,11 +14,17 @@ CFLAGS += $(patsubst %,-I%,	$(MODULES))
 # each module will add to this
 TARGET :=
 
-# determine the object files for dependencies
+# each module will add to this (path is relative to $(SOURCES) )
 OBJ :=
 #	\
 #	$(patsubst %.cpp,%.o, $(filter %.cpp,$(SRC))) \
 #	$(patsubst %.c,%.o,	$(filter %.c,$(SRC)))
+
+# Tools
+RM := rm -f
+MKDIR := mkdir -p
+
+
 
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
@@ -42,16 +48,16 @@ $(TARGET):  $$($$@_OBJS)
 %.d: %.cpp
 	echo Rebuild dependency for $<
 	DIR=$$(dirname $*); \
-	mkdir -p $${DIR}; \
+	$(MKDIR) $${DIR}; \
 	$(CXX) -MM -MG $(CFLAGS) $< | sed -e "s@^\(.*\).o:@$$DIR/\1.d $$DIR/\1.o:@" > $@
 
 
 clean:
-	rm -f $(TARGET)
-	rm -f `find . -name "*.o"`
-	rm -f `find . -name "*.a"`
-	rm -f `find . -name "*.map"`
-	rm -f `find . -name "*.so*"`
-	rm -f `find . -name "*.d"`
+	$(RM) $(TARGET)
+	$(RM) `find . -name "*.o"`
+	$(RM) `find . -name "*.a"`
+	$(RM) `find . -name "*.map"`
+	$(RM) `find . -name "*.so*"`
+	$(RM) `find . -name "*.d"`
 	
 
