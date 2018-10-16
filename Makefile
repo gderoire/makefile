@@ -1,13 +1,12 @@
-mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-mkfile_dir := $(dir $(mkfile_path))
+makefile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+makefile_dir := $(dir $(makefile_path))
 
-SOURCES := $(mkfile_dir)
+SOURCES := $(makefile_dir)
 
 VPATH := $(SOURCES)
 
 # Get list of folders
 MODULES := $(shell find $(SOURCES)src -type d)
-#$(warning Modules list $(MODULES))
 
 # look for include files in each of the modules
 CFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
@@ -28,27 +27,34 @@ MKDIR := mkdir -p
 
 .SILENT:
 
-$(info APPLICATIONS is $(APPLICATIONS))
-$(info LIBRARIES is $(LIBRARIES))
+$(info Availables APPLICATIONS are $(APPLICATIONS))
+$(info Availables LIBRARIES are $(LIBRARIES))
 
 .PHONY: all clean lib app
 
+# By default build all
 all: $(APPLICATIONS) $(LIBRARIES)
+app: $(APPLICATIONS)
+lib: $(LIBRARIES)
 
-# link the program
-# $$($$@_OBJ) -> target_OBJS
-app:$(APPLICATIONS)
+# In order to define the application and library prerequisite with a variable starting with target name
+# Example: the .o needed by prog application are listed in prog_OBJS variable
 .SECONDEXPANSION:
+
+# Define how to build an application
+# <xxx> : application name
+# <xxx>_OBJS : objects linked to build the application
+# <xxx>_LIBS : libraries linked to build the application (system libs)
+# <xxx>_LIBSDEP : libraries that are needed by application (user libs)
+
 $(APPLICATIONS):  $$($$(@F)_LIBSDEP)
 $(APPLICATIONS):  $$($$(@F)_OBJS)
 	echo Build application $@ with $^ objects and $($(@F)_LIBS) libraries
 #	echo depend on $($(@F)_LIBSDEP) libraries
 	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L ./
 
-lib:$(LIBRARIES)
 
-.SECONDEXPANSION:
-#$(LIBRARIES):  $$($$(@F)_OBJS) $$($$(@F)_LIBSDEP)
+# Define how to build a library
 $(LIBRARIES):  $$($$(patsubst lib%.so,%,$$(@F))_OBJS) $$($$(patsubst lib%.so,%,$$(@F))_LIBSDEP)
 	echo Build library $@ with $^ objects and $($(@F)_LIBS) libraries
 #	echo depend on $($(@F)_LIBSDEP) libraries
