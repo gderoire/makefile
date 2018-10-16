@@ -1,20 +1,29 @@
-LOCAL_DIR := src/lib
-LOCAL_SRC := $(LOCAL_DIR)/lib.cpp
+LIB_DIRECTORY := src/lib
 
-# Name of the library to build
-LIBRARIES += libtestlib.so
-testlib_NAME :=
-testlib_SONAME :=
-testlib_VER :=
+# List of source files
+LIB_SOURCES := $(LIB_DIRECTORY)/lib.cpp
 
-# List of objects used to build target 
-testlib_OBJS := $(patsubst %.cpp,%.o, $(LOCAL_SRC))
+# Name of the target to build
+LIB := testlib
+$(LIB)_NAME :=
+$(LIB)_SONAME :=
+$(LIB)_VER :=
 
-# List of libs to be linked in the target
-testlib_LIBS :=
+# List of libs to be passed to the linker
+$(LIB)_SYSLIBS :=
+$(LIB)_USERLIBS := -ltestlib
 
-#$(info testlib_OBJS: $(testlib_OBJS))
-#$(info testlib_LIBS: $(testlib_LIBS))
-#$(info testlib_LIBSDEP: $(testlib_LIBSDEP))
+# -------------- Common --------------
 
-OBJ += $(testlib_OBJS)
+# List of objects to be passed to the linker
+$(LIB)_OBJS := $(patsubst %.cpp,%.o, $(LIB_SOURCES))
+
+# List of source to be checked for dependencies
+OBJ += $($(LIB)_OBJS)
+
+# Append to list of applications that can be built
+LIBRARIES += lib$(LIB).so
+
+# List of dependencies on user libraries
+$(LIB)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(LIB)_USERLIBS))
+
