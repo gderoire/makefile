@@ -1,21 +1,27 @@
-LOCAL_DIR := src/app
-LOCAL_SRC := $(LOCAL_DIR)/app.cpp
+APP_DIRECTORY := src/app
+
+# List of source files
+APP_SOURCES := $(APP_DIRECTORY)/app.cpp
 
 # Name of the target to build
-APPLICATIONS += prog
+APP := prog
 
-# List of objects used to build target 
-prog_OBJS := $(patsubst %.cpp,%.o, $(LOCAL_SRC))
+# List of libs to be passed to the linker
+$(APP)_SYSLIBS :=
+$(APP)_USERLIBS := -ltestlib
 
-# List of libs to be linked to the target
-prog_SYSLIBS :=
-prog_USERLIBS := -ltestlib
+# -------------- Common --------------
 
-#$(info prog_OBJS: $(prog_OBJS))
-#$(info prog_LIBS: $(prog_LIBS))
-#$(info prog_LIBSDEP: $(prog_LIBSDEP))
+# List of objects to be passed to the linker
+$(APP)_OBJS := $(patsubst %.cpp,%.o, $(APP_SOURCES))
 
-# List of Userlibs required (dependencies)
-prog_USERLIBSDEP := $(patsubst -l%,lib%.so,$(prog_USERLIBS))
+# List of source to be checked for dependencies
+OBJ += $($(APP)_OBJS)
 
-OBJ += $(prog_OBJS)
+# Append to list of applications that can be built
+APPLICATIONS += $(APP)
+
+# List of dependencies on user libraries
+$(APP)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(APP)_USERLIBS))
+
+
