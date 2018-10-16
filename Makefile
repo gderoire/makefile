@@ -44,14 +44,15 @@ lib: $(LIBRARIES)
 # Define how to build an application
 # <xxx> : application name
 # <xxx>_OBJS : objects linked to build the application
-# <xxx>_LIBS : libraries linked to build the application (system libs)
-# <xxx>_LIBSDEP : libraries that are needed by application (user libs)
+# <xxx>_SYSLIBS : libraries linked to build the application (system libs)
+# <xxx>_USERLIBS : libraries linked to build the application (user libs)
+# <xxx>_USERLIBSDEP : dependencies on user libraries (user libs)
 
-$(APPLICATIONS):  $$($$(@F)_LIBSDEP)
+$(APPLICATIONS):  $$($$(@F)_USERLIBSDEP)
 $(APPLICATIONS):  $$($$(@F)_OBJS)
-	echo Build application $@ with $^ objects and $($(@F)_LIBS) libraries
+	echo Build application $@ with $^ objects and $($(@F)_SYSLIBS) $($(@F)_USERLIBS) libraries
 #	echo depend on $($(@F)_LIBSDEP) libraries
-	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L ./
+	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_USERLIBS) $($(@F)_SYSLIBS) -L ./
 
 
 # Define how to build a library
