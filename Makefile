@@ -16,12 +16,7 @@ CXXFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
 # each module will add to this
 APPLICATIONS :=
 LIBRARIES :=
-
-# each module will add to this (path is relative to $(SOURCES) )
 OBJ :=
-#	\
-#	$(patsubst %.cpp,%.o, $(filter %.cpp,$(SRC))) \
-#	$(patsubst %.c,%.o,	$(filter %.c,$(SRC)))
 
 # Tools
 RM := rm -f
@@ -31,26 +26,33 @@ MKDIR := mkdir -p
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
 
-#.SILENT:
+.SILENT:
 
 $(info APPLICATIONS is $(APPLICATIONS))
 $(info LIBRARIES is $(LIBRARIES))
 
-.PHONY: all clean
+.PHONY: all clean lib app
 
 all: $(APPLICATIONS) $(LIBRARIES)
 
 # link the program
 # $$($$@_OBJ) -> target_OBJS
+app:$(APPLICATIONS)
 .SECONDEXPANSION:
+$(APPLICATIONS):  $$($$(@F)_LIBSDEP)
 $(APPLICATIONS):  $$($$(@F)_OBJS)
-	echo Build application $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
-	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L .
+	echo Build application $@ with $^ objects and $($(@F)_LIBS) libraries
+#	echo depend on $($(@F)_LIBSDEP) libraries
+	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_LIBS) -L ./
+
+lib:$(LIBRARIES)
 
 .SECONDEXPANSION:
-$(LIBRARIES):  $$($$(@F)_OBJS)
-	echo Build library $@ with \'$^\' objects and \'$($(@F)_LIBS)\' libraries
-	$(CXX) -shared $(LDFLAGS) -o $@.so $^ $($(@F)_LIBS)
+#$(LIBRARIES):  $$($$(@F)_OBJS) $$($$(@F)_LIBSDEP)
+$(LIBRARIES):  $$($$(patsubst lib%.so,%,$$(@F))_OBJS) $$($$(patsubst lib%.so,%,$$(@F))_LIBSDEP)
+	echo Build library $@ with $^ objects and $($(@F)_LIBS) libraries
+#	echo depend on $($(@F)_LIBSDEP) libraries
+	$(CXX) -shared $(LDFLAGS) -o $@ $^ $($(@F)_LIBS)
 
 # Don't rebuild dependencies if clean is requested
 ifneq ($(MAKECMDGOALS),clean)
