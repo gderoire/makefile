@@ -96,7 +96,7 @@ endif
 
 
 clean:
-	$(RM) $(TARGET)
+	$(RM) $(APPLICATIONS) $(LIBRARIES)
 	$(RM) `find . -name "*.o"`
 	$(RM) `find . -name "*.a"`
 	$(RM) `find . -name "*.map"`
