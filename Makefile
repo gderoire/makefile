@@ -75,9 +75,11 @@ endef
 $(LIBRARIES):  $$($$@_OBJS) $$($$@_LIBSDEP)
 	echo Lib fullname: $@, basename: $(get_lib_basename)
 	echo Build library $@ with $^ objects and $($@_LIBS) libraries
-#	echo depend on $($(@F)_LIBSDEP) libraries
 	$(CXX) -shared $(LDFLAGS) -Wl,-soname,$($@_SONAME) -o $($@_NAME).$($@_VER) $^ $($@_LIBS)
+	# Link to use the specific version for compilation ($@ is passed to linker)
 	$(LN) $($@_NAME).$($@_VER) $@
+	# Link to use the specific version at runtime (SONAME is stored in caller binary)
+	$(LN) $($@_NAME).$($@_VER) $($@_SONAME)
 
 
 # Don't rebuild dependencies if clean is requested
