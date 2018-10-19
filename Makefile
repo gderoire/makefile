@@ -12,14 +12,18 @@ MODULES := $(shell find $(SOURCES)src -type d)
 CFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
 CXXFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
 
-# each module will add to this
+# each module will add to these variables
+# Name of binaries
 APPLICATIONS :=
+# Name of library (e.g. : libTest.so)
 LIBRARIES :=
+# List of objects to compute dependencies
 OBJ :=
 
 # Tools
 RM := rm -f
 MKDIR := mkdir -p
+LN := ln -sfn
 
 
 # include the description for each module if any
@@ -48,18 +52,33 @@ lib: $(LIBRARIES)
 # <xxx>_USERLIBS : libraries linked to build the application (user libs)
 # <xxx>_USERLIBSDEP : dependencies on user libraries (user libs)
 
-$(APPLICATIONS):  $$($$(@F)_USERLIBSDEP)
-$(APPLICATIONS):  $$($$(@F)_OBJS)
-	echo Build application $@ with $^ objects and $($(@F)_SYSLIBS) $($(@F)_USERLIBS) libraries
-#	echo depend on $($(@F)_LIBSDEP) libraries
-	$(CXX) $(LDFLAGS) -o $@ $^ $($(@F)_USERLIBS) $($(@F)_SYSLIBS) -L ./
+$(APPLICATIONS):  $$($$@_USERLIBSDEP)
+$(APPLICATIONS):  $$($$@_OBJS)
+	echo Build application $@ with $^ objects and $($@_SYSLIBS) $($@_USERLIBS) libraries
+	$(CXX) $(LDFLAGS) -o $@ $^ $($@_USERLIBS) $($@_SYSLIBS) -L ./
 
 
 # Define how to build a library
-$(LIBRARIES):  $$($$(patsubst lib%.so,%,$$(@F))_OBJS) $$($$(patsubst lib%.so,%,$$(@F))_LIBSDEP)
-	echo Build library $@ with $^ objects and $($(@F)_LIBS) libraries
+# <xxx> : library base name (e.g.: libTest.so -> Test)
+# <xxx>_OBJS : objects linked to build the library
+# <xxx>_SYSLIBS : libraries linked to build the library (system libs)
+# <xxx>_USERLIBS : libraries linked to build the library (user libs)
+# <xxx>_USERLIBSDEP : dependencies on user libraries (user libs)
+# <xxx>_NAME : library name 
+# <xxx>_SONAME : lib name + major version = API version
+# <xxx>_VER : library versions major.minor.build
+
+define get_lib_basename
+$(patsubst lib%.so,%,$@)
+endef
+
+$(LIBRARIES):  $$($$@_OBJS) $$($$@_LIBSDEP)
+	echo Lib fullname: $@, basename: $(get_lib_basename)
+	echo Build library $@ with $^ objects and $($@_LIBS) libraries
 #	echo depend on $($(@F)_LIBSDEP) libraries
-	$(CXX) -shared $(LDFLAGS) -o $@ $^ $($(@F)_LIBS)
+	$(CXX) -shared $(LDFLAGS) -Wl,-soname,$($@_SONAME) -o $($@_NAME).$($@_VER) $^ $($@_LIBS)
+	$(LN) $($@_NAME).$($@_VER) $@
+
 
 # Don't rebuild dependencies if clean is requested
 ifneq ($(MAKECMDGOALS),clean)
