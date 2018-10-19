@@ -61,25 +61,19 @@ $(APPLICATIONS):  $$($$@_OBJS)
 # Define how to build a library
 # <xxx> : library base name (e.g.: libTest.so -> Test)
 # <xxx>_OBJS : objects linked to build the library
-# <xxx>_SYSLIBS : libraries linked to build the library (system libs)
-# <xxx>_USERLIBS : libraries linked to build the library (user libs)
-# <xxx>_USERLIBSDEP : dependencies on user libraries (user libs)
-# <xxx>_NAME : library name 
+# <xxx>_LIBS : libraries linked to build the library
+# <xxx>_USERLIBSDEP : libraries that need to be built before
+# <xxx>_REALNAME : library name with version append
 # <xxx>_SONAME : lib name + major version = API version
-# <xxx>_VER : library versions major.minor.build
 
-define get_lib_basename
-$(patsubst lib%.so,%,$@)
-endef
-
-$(LIBRARIES):  $$($$@_OBJS) $$($$@_LIBSDEP)
-	echo Lib fullname: $@, basename: $(get_lib_basename)
+$(LIBRARIES):  $$($$@_USERLIBSDEP)
+$(LIBRARIES):  $$($$@_OBJS)
 	echo Build library $@ with $^ objects and $($@_LIBS) libraries
-	$(CXX) -shared $(LDFLAGS) -Wl,-soname,$($@_SONAME) -o $($@_NAME).$($@_VER) $^ $($@_LIBS)
+	$(CXX) -shared $(LDFLAGS) -Wl,-soname,$($@_SONAME) -o $($@_REALNAME) $^ $($@_LIBS)
 	# Link to use the specific version for compilation ($@ is passed to linker)
-	$(LN) $($@_NAME).$($@_VER) $@
+	$(LN) $($@_REALNAME) $@
 	# Link to use the specific version at runtime (SONAME is stored in caller binary)
-	$(LN) $($@_NAME).$($@_VER) $($@_SONAME)
+	$(LN) $($@_REALNAME) $($@_SONAME)
 
 
 # Don't rebuild dependencies if clean is requested
