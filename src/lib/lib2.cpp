@@ -1,10 +1,8 @@
 #include <iostream>
 using namespace std;
 
-#include "app.h"
-
-int main() 
+int hello_lib2()
 {
-    cout << "Hello, World2!";
+    cout << "Hello, Lib22!";
     return 0;
 }

@@ -1,0 +1,7 @@
++ build locally a binary
++ manage locally dependencies
++ manage several binaries (one or more per folder)
+- build locally a library
+- build out of tree the library and the binary
+- build out of tree or in tree the library and the binary
+- apply the same on Fusion project
