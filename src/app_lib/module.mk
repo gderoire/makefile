@@ -63,7 +63,7 @@ $(LIB)_REALNAME := $(LIB).$($(LIB)_MAJOR_VER).$($(LIB)_MINOR_VER).$($(LIB)_BUILD
 $(LIB)_OBJS := $(patsubst %.cpp,%.o, $(LIB_SOURCES))
 
 # List of source to be checked for dependencies
-OBJ += $($(LIB)_OBJS)
+LIBOBJ += $($(LIB)_OBJS)
 
 # Append to list of applications that can be built
 LIBRARIES += $(LIB)

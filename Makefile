@@ -9,8 +9,12 @@ VPATH := $(SOURCES)
 MODULES := $(shell find $(SOURCES)src -type d)
 
 # look for include files in each of the modules
-CFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
-CXXFLAGS += $(patsubst %,-I%,	$(MODULES)) -fPIC
+# Include all folder for header search
+#CFLAGS += $(patsubst %,-I%,	$(MODULES))
+#CXXFLAGS += $(patsubst %,-I%,	$(MODULES))
+# Include base source folder for header search
+CFLAGS += -I$(SOURCES)src
+CXXFLAGS += -I$(SOURCES)src
 
 # each module will add to these variables
 # Name of binaries
@@ -19,6 +23,8 @@ APPLICATIONS :=
 LIBRARIES :=
 # List of objects to compute dependencies
 OBJ :=
+# Library objects that have to be built with -fPIC flag
+LIBOBJ :=
 
 # Tools
 RM := rm -f
@@ -75,6 +81,10 @@ $(LIBRARIES):  $$($$@_OBJS)
 	# Link to use the specific version at runtime (SONAME is stored in caller binary)
 	$(LN) $($@_REALNAME) $($@_SONAME)
 
+# Add -fPIC flag only for Objects used in libraries
+$(LIBOBJ): CFLAGS += -fPIC
+$(LIBOBJ): CXXFLAGS += -fPIC
+
 
 # Don't rebuild dependencies if clean is requested
 ifneq ($(MAKECMDGOALS),clean)
@@ -87,7 +97,7 @@ ifneq ($(MAKECMDGOALS),clean)
 	$(CXX) -MM -MG $(CFLAGS) $< | sed -e "s@^\(.*\).o:@$$DIR/\1.d $$DIR/\1.o:@" > $@
 
 # include the C include dependencies if any and trigger dependencies refresh if files is missing
--include $(OBJ:.o=.d)
+-include $(OBJ:.o=.d) $(LIBOBJ:.o=.d)
 endif
 
 

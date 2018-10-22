@@ -2,7 +2,8 @@
 using namespace std;
 
 #include "app_foo.h"
-#include "libbar.h"
+//#include "../lib_bar/libbar.h"
+#include "lib_bar/libbar.h"
 
 int main() 
 {
