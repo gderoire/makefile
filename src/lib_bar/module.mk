@@ -1,15 +1,15 @@
-LIB_DIRECTORY := src/lib
+LIB_DIRECTORY := src/lib_bar
 
 # List of source files
-LIB_SOURCES := $(LIB_DIRECTORY)/lib.cpp $(LIB_DIRECTORY)/lib2.cpp
+LIB_SOURCES := $(LIB_DIRECTORY)/libbar.cpp
 
 # Name of the target to build
-LIB := libtestlib.so
+LIB := libbar.so
 
 # Library versions
 # Major version is used in soname to state that all library with same major version are backward compatibles
-$(LIB)_MAJOR_VER := 1
-$(LIB)_MINOR_VER := 0
+$(LIB)_MAJOR_VER := 2
+$(LIB)_MINOR_VER := 1
 $(LIB)_BUILD_VER := 0
 
 # List of libs to be passed to the linker (e.g.: -lthread)
@@ -34,7 +34,7 @@ $(LIB)_REALNAME := $(LIB).$($(LIB)_MAJOR_VER).$($(LIB)_MINOR_VER).$($(LIB)_BUILD
 $(LIB)_OBJS := $(patsubst %.cpp,%.o, $(LIB_SOURCES))
 
 # List of source to be checked for dependencies
-OBJ += $(LIB)_OBJS
+OBJ += $($(LIB)_OBJS)
 
 # Append to list of applications that can be built
 LIBRARIES += $(LIB)

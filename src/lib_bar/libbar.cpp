@@ -1,10 +1,8 @@
 #include <iostream>
 using namespace std;
 
-#include "app.h"
-
-int main() 
+int hello_bar() 
 {
-    cout << "Hello, World2!";
+    cout << "Hello, Bar!\n";
     return 0;
 }

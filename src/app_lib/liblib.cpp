@@ -1,8 +1,8 @@
 #include <iostream>
 using namespace std;
 
-int main() 
+int hello_lib() 
 {
-    cout << "Hello, World!";
+    cout << "Hello, Lib!\n";
     return 0;
 }

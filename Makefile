@@ -33,6 +33,7 @@ LN := ln -sfn
 
 $(info Availables APPLICATIONS are $(APPLICATIONS))
 $(info Availables LIBRARIES are $(LIBRARIES))
+#$(info Availables objects are $(OBJ))
 
 .PHONY: all clean lib app
 
@@ -48,14 +49,13 @@ lib: $(LIBRARIES)
 # Define how to build an application
 # <xxx> : application name
 # <xxx>_OBJS : objects linked to build the application
-# <xxx>_SYSLIBS : libraries linked to build the application (system libs)
-# <xxx>_USERLIBS : libraries linked to build the application (user libs)
+# <xxx>_LIBS : libraries linked to build the application
 # <xxx>_USERLIBSDEP : dependencies on user libraries (user libs)
 
 $(APPLICATIONS):  $$($$@_USERLIBSDEP)
 $(APPLICATIONS):  $$($$@_OBJS)
-	echo Build application $@ with $^ objects and $($@_SYSLIBS) $($@_USERLIBS) libraries
-	$(CXX) $(LDFLAGS) -o $@ $^ $($@_USERLIBS) $($@_SYSLIBS) -L ./
+	echo Build application $@ with $^ objects and $($@_LIBS) libraries
+	$(CXX) $(LDFLAGS) -o $@ $^ $($@_LIBS) -L ./
 
 
 # Define how to build a library
