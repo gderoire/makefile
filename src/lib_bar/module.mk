@@ -1,7 +1,8 @@
-LIB_DIRECTORY := src/lib_bar
+CURRENT_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIRECTORY := $(dir $(CURRENT_PATH))
 
 # List of source files
-LIB_SOURCES := $(LIB_DIRECTORY)/libbar.cpp
+LIB_SOURCES := libbar.cpp
 
 # Name of the target to build
 LIB := libbar.so
@@ -16,27 +17,4 @@ $(LIB)_BUILD_VER := 0
 $(LIB)_SYSLIBS :=
 $(LIB)_USERLIBS :=
 
-# -------------- Common --------------
-
-# List of dependencies on user libraries to be build before
-$(LIB)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(LIB)_USERLIBS))
-
-# List of libraries to link with
-$(LIB)_LIBS := $($(LIB)_SYSLIBS) $($(LIB)_USERLIBS)
-
-# Soname including Major version. Major version is ABI/API version
-$(LIB)_SONAME := $(LIB).$($(LIB)_MAJOR_VER)
-
-# Library realname with version append
-$(LIB)_REALNAME := $(LIB).$($(LIB)_MAJOR_VER).$($(LIB)_MINOR_VER).$($(LIB)_BUILD_VER)
-
-# List of objects to be passed to the linker
-$(LIB)_OBJS := $(patsubst %.cpp,%.o, $(LIB_SOURCES))
-
-# List of source to be checked for dependencies
-LIBOBJ += $($(LIB)_OBJS)
-
-# Append to list of applications that can be built
-LIBRARIES += $(LIB)
-
-
+$(eval $(append_library_to_targets))

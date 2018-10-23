@@ -31,6 +31,45 @@ RM := rm -f
 MKDIR := mkdir -p
 LN := ln -sfn
 
+define append_application_to_targets
+ # List of dependencies on user libraries
+ $(APP)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(APP)_USERLIBS))
+
+ # List of libraries to link with
+ $(APP)_LIBS := $$($(APP)_SYSLIBS) $$($(APP)_USERLIBS)
+
+ # List of objects to be passed to the linker
+ $(APP)_OBJS := $(patsubst %.cpp,$(CURRENT_DIRECTORY)%.o, $(APP_SOURCES))
+
+ # List of source to be checked for dependencies
+ OBJ += $$($(APP)_OBJS)
+
+ # Append to list of applications that can be built
+ APPLICATIONS += $(APP)
+endef
+
+define append_library_to_targets
+ # List of dependencies on user libraries to be build before
+ $(LIB)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(LIB)_USERLIBS))
+
+ # List of libraries to link with
+ $(LIB)_LIBS := $$($(LIB)_SYSLIBS) $$($(LIB)_USERLIBS)
+
+ # Soname including Major version. Major version is ABI/API version
+ $(LIB)_SONAME := $(LIB).$$($(LIB)_MAJOR_VER)
+
+ # Library realname with version append
+ $(LIB)_REALNAME := $(LIB).$$($(LIB)_MAJOR_VER).$$($(LIB)_MINOR_VER).$$($(LIB)_BUILD_VER)
+
+ # List of objects to be passed to the linker
+ $(LIB)_OBJS := $(patsubst %.cpp,$(CURRENT_DIRECTORY)%.o, $(LIB_SOURCES))
+
+ # List of source to be checked for dependencies
+ LIBOBJ += $$($(LIB)_OBJS)
+
+ # Append to list of applications that can be built
+ LIBRARIES += $(LIB)
+endef
 
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
@@ -39,7 +78,8 @@ LN := ln -sfn
 
 $(info Availables APPLICATIONS are $(APPLICATIONS))
 $(info Availables LIBRARIES are $(LIBRARIES))
-#$(info Availables objects are $(OBJ))
+#$(info Availables objects for application are $(OBJ))
+#$(info Availables objects for library are $(LIBOBJ))
 
 .PHONY: all clean lib app
 

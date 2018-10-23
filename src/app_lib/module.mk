@@ -1,7 +1,9 @@
-APP_DIRECTORY := src/app_lib
+CURRENT_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIRECTORY := $(dir $(CURRENT_PATH))
+
 
 # List of source files
-APP_SOURCES := $(APP_DIRECTORY)/app.cpp
+APP_SOURCES := app.cpp
 
 # Name of the target to build
 APP := app_lib
@@ -10,27 +12,12 @@ APP := app_lib
 $(APP)_SYSLIBS :=
 $(APP)_USERLIBS := -llib
 
-# -------------- Common --------------
-
-# List of dependencies on user libraries
-$(APP)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(APP)_USERLIBS))
-
-# List of libraries to link with
-$(APP)_LIBS := $($(APP)_SYSLIBS) $($(APP)_USERLIBS)
-
-# List of objects to be passed to the linker
-$(APP)_OBJS := $(patsubst %.cpp,%.o, $(APP_SOURCES))
-
-# List of source to be checked for dependencies
-OBJ += $($(APP)_OBJS)
-
-# Append to list of applications that can be built
-APPLICATIONS += $(APP)
+$(eval $(append_application_to_targets))
 
 # -------------- Lib --------------
 
 # List of source files
-LIB_SOURCES := $(APP_DIRECTORY)/liblib.cpp
+LIB_SOURCES := liblib.cpp
 
 # Name of the target to build
 LIB := liblib.so
@@ -45,27 +32,6 @@ $(LIB)_BUILD_VER := 0
 $(LIB)_SYSLIBS :=
 $(LIB)_USERLIBS :=
 
-# -------------- Common --------------
-
-# List of dependencies on user libraries to be build before
-$(LIB)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(LIB)_USERLIBS))
-
-# List of libraries to link with
-$(LIB)_LIBS := $($(LIB)_SYSLIBS) $($(LIB)_USERLIBS)
-
-# Soname including Major version. Major version is ABI/API version
-$(LIB)_SONAME := $(LIB).$($(LIB)_MAJOR_VER)
-
-# Library realname with version append
-$(LIB)_REALNAME := $(LIB).$($(LIB)_MAJOR_VER).$($(LIB)_MINOR_VER).$($(LIB)_BUILD_VER)
-
-# List of objects to be passed to the linker
-$(LIB)_OBJS := $(patsubst %.cpp,%.o, $(LIB_SOURCES))
-
-# List of source to be checked for dependencies
-LIBOBJ += $($(LIB)_OBJS)
-
-# Append to list of applications that can be built
-LIBRARIES += $(LIB)
-
+#$(info $(append_library_to_targets))
+$(eval $(append_library_to_targets))
 
