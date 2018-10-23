@@ -1,20 +1,22 @@
 makefile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 makefile_dir := $(dir $(makefile_path))
 
-SOURCES := $(makefile_dir)
+ROOT_DIRECTORY := $(makefile_dir)
 
-VPATH := $(SOURCES)
+VPATH := $(ROOT_DIRECTORY)
+
+SOURCES := $(ROOT_DIRECTORY)src
 
 # Get list of folders
-MODULES := $(shell find $(SOURCES)src -type d)
+MODULES := $(shell find $(SOURCES) -type d)
 
 # look for include files in each of the modules
 # Include all folder for header search
 #CFLAGS += $(patsubst %,-I%,	$(MODULES))
 #CXXFLAGS += $(patsubst %,-I%,	$(MODULES))
 # Include base source folder for header search
-CFLAGS += -I$(SOURCES)src
-CXXFLAGS += -I$(SOURCES)src
+CFLAGS += -I$(SOURCES)
+CXXFLAGS += -I$(SOURCES)
 
 # each module will add to these variables
 # Name of binaries
@@ -91,7 +93,7 @@ endef
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
 
-#.SILENT:
+.SILENT:
 
 $(info Availables APPLICATIONS are $(APPLICATIONS))
 $(info Availables LIBRARIES are $(LIBRARIES))
