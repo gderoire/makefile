@@ -1,7 +1,6 @@
 CURRENT_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIRECTORY := $(dir $(CURRENT_PATH))
 
-
 # List of source files
 APP_SOURCES := app.cpp
 

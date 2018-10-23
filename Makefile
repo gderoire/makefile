@@ -32,6 +32,13 @@ MKDIR := mkdir -p
 LN := ln -sfn
 
 define append_application_to_targets
+# Must be defined before calling the macro
+# CURRENT_DIRECTORY := 
+# APP_SOURCES := app.cpp
+# APP := app_hello
+# $(APP)_SYSLIBS :=
+# $(APP)_USERLIBS := -lhello
+
  # List of dependencies on user libraries
  $(APP)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(APP)_USERLIBS))
 
@@ -49,6 +56,16 @@ define append_application_to_targets
 endef
 
 define append_library_to_targets
+# Must be defined before calling the macro
+# CURRENT_DIRECTORY := 
+# LIB_SOURCES := lib.cpp
+# LIB := libbar.so
+# $(LIB)_SYSLIBS :=
+# $(LIB)_USERLIBS := -lhello
+# $(LIB)_MAJOR_VER := 2
+# $(LIB)_MINOR_VER := 1
+# $(LIB)_BUILD_VER := 0
+
  # List of dependencies on user libraries to be build before
  $(LIB)_USERLIBSDEP := $(patsubst -l%,lib%.so,$($(LIB)_USERLIBS))
 
@@ -74,7 +91,7 @@ endef
 # include the description for each module if any
 -include $(patsubst %,%/module.mk,$(MODULES))
 
-.SILENT:
+#.SILENT:
 
 $(info Availables APPLICATIONS are $(APPLICATIONS))
 $(info Availables LIBRARIES are $(LIBRARIES))
