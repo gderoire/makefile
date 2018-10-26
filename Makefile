@@ -97,8 +97,8 @@ endef
 
 $(info Availables APPLICATIONS are $(APPLICATIONS))
 $(info Availables LIBRARIES are $(LIBRARIES))
-#$(info Availables objects for application are $(OBJ))
-#$(info Availables objects for library are $(LIBOBJ))
+$(info Availables objects for application are $(OBJ))
+$(info Availables objects for library are $(LIBOBJ))
 
 .PHONY: all clean lib app
 
