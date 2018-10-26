@@ -8,12 +8,12 @@ VPATH := $(ROOT_DIRECTORY)
 SOURCES := $(ROOT_DIRECTORY)src
 
 # Get list of folders
-MODULES := $(shell find $(SOURCES) -type d)
+MODULES := $(dir $(shell find $(SOURCES) -name module.mk))
 
 # look for include files in each of the modules
 # Include all folder for header search
-#CFLAGS += $(patsubst %,-I%,	$(MODULES))
-#CXXFLAGS += $(patsubst %,-I%,	$(MODULES))
+CFLAGS += $(patsubst %,-I%,	$(MODULES))
+CXXFLAGS += $(patsubst %,-I%,	$(MODULES))
 # Include base source folder for header search
 CFLAGS += -I$(SOURCES)
 CXXFLAGS += -I$(SOURCES)
