@@ -1,0 +1,29 @@
+
+TEXT:= Coucou
+TEXT_INDIRECT := TEXT2
+TEXT2:= COUCOU
+
+define message =
+ @echo $(TEXT)
+endef
+
+define MESSAGE =
+ @echo $($(TEXT_INDIRECT))
+endef
+
+define print_message =
+ $(info Le message est $(TEXT))
+endef
+
+TEXT := Coucou2
+
+all:
+	@echo $(TEXT)
+	$(message)
+	$(MESSAGE)
+	$(print_message)
+
+
+
+# Macro (define simple) sont developée à l'utilisation
+# Les fonctions dans les macros sont exécutés à la definition
